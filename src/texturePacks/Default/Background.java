@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +32,7 @@ class Background extends JRootPane {
 
 	static Background Create(GameFrame gameframe) {
 		Background background = new Background();
-		background.setImage("images/ground.png");
+		background.setImage("images/background.jpg");
 		background.setDoubleBuffered(true);
 		background.setSize(gameframe.getSize());
 		return background;
@@ -50,14 +49,12 @@ class Background extends JRootPane {
 			g.drawLine((i*current.width)/boardSize.height, 0, (i * current.width) / boardSize.height, current.height);
 */	}
 
-	@Override
-	public void paint(Graphics g) {
+	private Image backgroundImage() {
 		int i, j;
 		Dimension boardSize = ((GameFrame) getParent()).getGame().getBoardSize();
-		Rectangle dimension = g.getClipBounds();
+		Dimension dimension = getSize();
 		Image img = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = (Graphics2D) img.getGraphics();
-		g2d.setClip(0, 0, dimension.width, dimension.height);
 
 		if (prepareImage(image, dimension.width/boardSize.width+1, dimension.height/boardSize.height+1, this)) {
 			for (i=0; i<boardSize.width; i++) {
@@ -66,13 +63,20 @@ class Background extends JRootPane {
 							(i*dimension.width)		/boardSize.width,
 							(j*dimension.height)	/boardSize.height,
 							dimension.width		/boardSize.width		+1,
-							dimension.height	/boardSize.height	+1,
+							dimension.height	/boardSize.height		+1,
 							this);
 				}
 			}
 			paintGrid(g2d, boardSize);
-			g.drawImage(img, 0, 0, dimension.width, dimension.height, this);
 			g2d.dispose();
 		}
+		return img;
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		Image image = backgroundImage();
+		if (image != null)
+			g.drawImage(image, 0, 0, image.getWidth(this), image.getHeight(this), this);
 	}
 }

@@ -93,41 +93,6 @@ class Board implements Cloneable {
 			}
 		}
 	}
-	
-	void suddenDeathBoard(long seconds) {
-		if(seconds >= getWidth() * getHeight()) {
-			return;
-		}
-		
-		if(seconds%2 == 0) {
-			seconds /= 2;
-			int x = (int) (seconds%getWidth());
-			int y = (int) (seconds/getWidth());
-			setItem(new Block(game, new Point(x, y)));
-			
-			for (Player player: game.getPlayerList()) {
-				Point tmp = player.getBoardPosition();
-				if (tmp.x == x && tmp.y == y) {
-					System.out.println("kaboom" + player.getName() + "EST MORT");
-					player.kill();
-				}
-			}
-		}
-		else {
-			seconds = (seconds - 1) / 2;
-			int x = (int) (seconds%getWidth());
-			int y = (int) (seconds/getWidth());
-			setItem(new Block(game, new Point(getWidth()-(1+x), getHeight()-(1+y))));
-			
-			for (Player player: game.getPlayerList()) {
-				Point tmp = player.getBoardPosition();
-				if (tmp.x == getWidth()-(1+x) && tmp.y == getHeight()-(1+y)) {
-					System.out.println("kaboom" + player.getName() + "EST MORT");
-					player.kill();
-				}
-			}
-		}
-	}
 
 	Bomb plantBomb(Player player) {
 		Point position = player.getBoardPosition();

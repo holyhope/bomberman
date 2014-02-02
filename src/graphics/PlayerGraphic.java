@@ -3,24 +3,29 @@ package graphics;
 import game.Game;
 import game.Player;
 
-import java.awt.Color;
-
 @SuppressWarnings("serial")
-public class PlayerGraphic extends Player {
-	public Color color;
+public abstract class PlayerGraphic extends Player implements ItemGraphic {
+	private GameFrame parent;
 	
-	public PlayerGraphic(Game game, Player player, int color) {
+	protected PlayerGraphic(GameFrame gameFrame, Game game, Player player) {
 		super(game, player.getPosition(), player.getName());
-		this.color = new Color(color);
-	}
-
-	@Override
-	public PlayerGraphic clone() {
-		PlayerGraphic player = new PlayerGraphic(this.game, super.clone(), color.getRGB());
-		return player;
+		parent = gameFrame;
 	}
 
 	public void setData(Player player) {
+		x = player.x;
+		y = player.y;
+	}
+
+	@Override
+	public GameFrame getParent() {
+		return parent;
+	}
+
+	@Override
+	public abstract PlayerGraphic clone();
+
+	public void update(PlayerGraphic player) {
 		x = player.x;
 		y = player.y;
 	}

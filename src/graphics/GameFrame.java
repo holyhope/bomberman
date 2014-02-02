@@ -3,24 +3,29 @@ package graphics;
 import game.Game;
 import game.Player;
 
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.Timer;
+
+import controller.Controls;
+import controller.PlayerController;
 
 @SuppressWarnings("serial")
 public abstract class GameFrame extends JFrame implements ActionListener {
@@ -28,7 +33,6 @@ public abstract class GameFrame extends JFrame implements ActionListener {
 	private Timer timer;
 	private Date lastUpdate = new Date(0);
 	private ArrayList<PlayerGraphic> playerList = new ArrayList<PlayerGraphic>();
-	private int screen = 0;
 
 	public abstract void updateTitle();
 
@@ -37,20 +41,44 @@ public abstract class GameFrame extends JFrame implements ActionListener {
 		setSize(dimension);
 		setPreferredSize(dimension);
 		dimension = game.getBoardSize();
-		dimension.width = dimension.width*5+38;
-		dimension.height = dimension.height*5+16;
+		Rectangle border = getBorder();
+		dimension.width = dimension.width*5+border.width;
+		dimension.height = dimension.height*5+border.height;
 		setMinimumSize(dimension);
 		timer = new Timer(delay, this);
-		timer.start();
-	}
-	
-	protected Rectangle getBorder() {
-		return new Rectangle(30, 8, 16, 16);
+		addWindowListener(new WindowListener() {
+			@Override
+			public void windowOpened(WindowEvent arg0) {
+				timer.start();
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent arg0) {
+				timer.stop();
+				for (PlayerGraphic player: getPlayerList())
+					player.surrend();
+			}
+
+			@Override
+			public void windowIconified(WindowEvent arg0) {}
+			@Override
+			public void windowDeiconified(WindowEvent arg0) {}
+			@Override
+			public void windowDeactivated(WindowEvent arg0) {}
+			@Override
+			public void windowClosing(WindowEvent arg0) {}
+			@Override
+			public void windowActivated(WindowEvent arg0) {}
+		});
 	}
 
-	public static Image openImage(Object obj, String path) {
+	static protected Rectangle getBorder() {
+		return new Rectangle(8, 30, 16, 38);
+	}
+
+	public static Image openImage(String path) {
 		Image image = null;
-		URL url = obj.getClass().getResource(path);
+		URL url = GameFrame.class.getResource("../texturePacks/"+path);
 		if (url == null)
 			throw new IllegalArgumentException("\""+path+"\" doesn't exists.");
 		File file = new File(url.getPath());
@@ -89,10 +117,52 @@ public abstract class GameFrame extends JFrame implements ActionListener {
 		return game.getWindowFavoriteSize();
 	}
 
+	protected abstract PlayerGraphic newPlayer(Player player);
+
+	private Dimension getContentSize() {
+		Dimension dimension = getSize();
+		Rectangle border = getBorder();
+		dimension.width-= border.width;
+		dimension.height-= border.height;
+		return dimension;
+	}
+
 	public void addPlayer(Player character, Controls controls) {
-		MyKeyListener mkl = new MyKeyListener(character, controls);
+		addPlayer(character);
+		PlayerController mkl = new PlayerController(character, controls);
+		
 		addKeyListener(mkl);
 		addFocusListener(mkl);
+	}
+
+	public void board2Graphic(Point position) {
+		scalePosition(position, getGame().getBoardSize());
+	}
+
+	public void positionGraphic(Point position) {
+		scalePosition(position, getGame().getWindowFavoriteSize());
+		Dimension imageSize = imageSize();
+		position.setLocation(position.x-imageSize.width/2, position.y-imageSize.height/2);
+	}
+
+	public void scalePosition(Point position, Dimension dimension) {
+		Dimension actualSize = getContentSize();
+		position.setLocation(
+				(position.x*actualSize.width)	/dimension.width,
+				(position.y*actualSize.height)	/dimension.height);
+	}
+
+	protected void addPlayer(PlayerGraphic player) {
+		int index = playerList.indexOf(player);
+		if (index >= 0) {
+			playerList.get(index).update(player);
+		} else {
+			playerList.add(player);
+		}
+	}
+
+	protected void addPlayer(Player player) {
+		addPlayer(newPlayer(player));
 	}
 
 	public Date getLastUpdate() {
@@ -105,53 +175,42 @@ public abstract class GameFrame extends JFrame implements ActionListener {
 
 	@Override
 	public void paint(Graphics g) {
-		Dimension dimension = getSize();
-		Image img = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
+		Rectangle border = getBorder();
+		Dimension size = getSize();
+		Image img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics g2d = img.getGraphics();
 
 		super.paint(g2d);
-		Container container = getContentPane();
-		container.paint(g2d.create(8, 30, container.getWidth()+1, container.getHeight()+1));
+		getContentPane().paint(g2d.create(border.x, border.y, size.width-border.width, size.height-border.height));
 
-		g.drawImage(img, 0, 0, dimension.width, dimension.height, this);
+		g.drawImage(img, 0, 0, size.width, size.height, this);
 	}
 
-	public void update(ActionEvent arg0) {
+	public void update(ActionEvent e) {
 		updateTitle();
-		if (updated()) {
+		updatePlayerList();
+		if (updated())
 			repaint();
-			if (game.isStarted() && game.isOver()) {
-				if (screen  == 0) {
-					screen = 1;
-					changePane(1);
-				}
-			}
-		}
 	}
 
-	protected abstract void changePane(int n);
+	protected void updatePlayerList() {
+		for (Player player: getGame().getPlayerList())
+			addPlayer(player);
+	}
 
 	@Override
-	public final void actionPerformed(ActionEvent arg0) {
-		update(arg0);
+	public void actionPerformed(ActionEvent e) {
+		update(e);
 		if (updated()) {
 			lastUpdate = new Date();
 		}
 	}
 
-	public Iterable<PlayerGraphic> getPlayerList() {
-		Random random = new Random();
-		int index;
-
-		for (Player player: game.getPlayerList()) {
-			index = playerList.indexOf(player);
-			if (index == -1) {
-				playerList.add(new PlayerGraphic(getGame(), player, random.nextInt()));
-			} else {
-				playerList.get(index).setData(player);
-			}
-		}
-		return playerList;
+	public List<PlayerGraphic> getPlayerList() {
+		List<PlayerGraphic> players = new ArrayList<PlayerGraphic>();
+		for (PlayerGraphic player: playerList)
+			players.add(player.clone());
+		return players;
 	}
 
 	public int getDelay() {
@@ -165,5 +224,13 @@ public abstract class GameFrame extends JFrame implements ActionListener {
 				dimension.width/boardSIze.width,
 				dimension.height/boardSIze.height);
 		return dimension;
+	}
+
+	public List<PlayerGraphic> getWinners() {
+		List<PlayerGraphic> winners = new ArrayList<PlayerGraphic>();
+		for (PlayerGraphic player: getPlayerList())
+			if (!player.isDead())
+				winners.add(player);
+		return winners;
 	}
 }

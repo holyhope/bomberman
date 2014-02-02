@@ -1,17 +1,19 @@
 package texturePacks.Default;
 
 import game.Game;
+import game.Player;
 import graphics.GameFrame;
+import graphics.PlayerGraphic;
 
+import java.awt.Color;
 import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.imageio.ImageIO;
+import java.awt.event.ActionEvent;
+import java.util.Random;
 
 @SuppressWarnings("serial")
 public class TexturePack extends GameFrame {
+	private Screen screen = Screen.Other;
+
 	public TexturePack(Game bomberman) {
 		super(bomberman);
 	}
@@ -21,54 +23,71 @@ public class TexturePack extends GameFrame {
 
 		texture.setLocationRelativeTo(null);
 		texture.setTitle("Bomberman");
-		texture.setIcon();
+		texture.setIconImage(openImage("icon.gif"));
 
 		texture.setVisible(true);
 
 		texture.setRootPane(Background.Create(texture));
-		texture.setContentPane(Content.Create(texture));
 
 		return texture;
 	}
-
-	private void setIcon() {
-		URL url = getClass().getResource("images/icon.gif");
-		if (url == null)
-			throw new IllegalArgumentException("\"images/icon.gif\" doesn't exists.");
-
-		File file = new File(url.getPath());
-		try {
-			Image image = ImageIO.read(file);
-			setIconImage(image);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	
+	public static Image openImage(String path) {
+		if (path.startsWith("/"))
+			return GameFrame.openImage(path);
+		return GameFrame.openImage("Default/images/"+path);
 	}
 
 	@Override
 	public void updateTitle() {
 		StringBuilder string = new StringBuilder();
-
 		long time = getGame().timeSpent();
 		long seconds = (time/1000)%60;
-		long minutes = (time/1000)/60;
-		string.append("Bomberman - ").append(minutes).append(":");
-		if (seconds < 10)
-			string.append(0);
-		string.append(seconds);
+		long minutes = seconds/60;
+
+		string.append("Bomberman");
+		if (getGame().isStarted()) {
+			string.append(" - ").append(minutes).append(":");
+			if (seconds < 10)
+				string.append(0);
+			string.append(seconds);
+		}
 		setTitle(string.toString());
 	}
-
+	
 	@Override
-	protected void changePane(int n) {
-		switch (n) {
-		case 0:
-			setContentPane(Content.Create(this));
+	public void update(ActionEvent e) {
+		switch (screen) {
+		case Main:
+			if (getGame().isStarted()) {
+				screen = Screen.Game;
+				updatePlayerList();
+				setContentPane(new Content(this));
+				System.out.println("let's play.");
+				return;
+			}
+			repaint();
 			break;
-		case 1:
-			setContentPane(new VictoryScreen(this));
+		case Game:
+			if (getGame().isOver()) {
+				screen = Screen.Victory;
+				setContentPane(new VictoryScreen(this));
+				return;
+			}
+			super.update(e);
 			break;
-			default:
+		case Victory:
+			repaint();
+			break;
+		default:
+			screen = Screen.Main;
+			setContentPane(new MainScreen(this));
 		}
+	}
+	
+	@Override
+	protected PlayerGraphic newPlayer(Player player) {
+		Random random = new Random();
+		return new PlayerImage(this, getGame(), player, new Color(random.nextInt()));
 	}
 }

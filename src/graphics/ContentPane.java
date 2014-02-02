@@ -12,14 +12,18 @@ import game.Wall;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public abstract class ContentPane extends Panel {
-	private Image imagePlayer;
+	public ContentPane(GameFrame gameFrame) {
+		super(gameFrame);
+	}
+
 	private ArrayList<BombGraphic> bombList = new ArrayList<BombGraphic>();
 	private ArrayList<WallGraphic> wallList = new ArrayList<WallGraphic>();
 	private ArrayList<BuffSpeedGraphic> speedBuffList = new ArrayList<BuffSpeedGraphic>();
@@ -27,38 +31,15 @@ public abstract class ContentPane extends Panel {
 	private ArrayList<BuffLifeGraphic> lifeBuffList = new ArrayList<BuffLifeGraphic>();
 	private ArrayList<BuffDropGraphic> dropBuffList = new ArrayList<BuffDropGraphic>();
 
-	public ContentPane(GameFrame gameframe) {
-		super(gameframe);
-	}
-
-	protected void setCursor(Object object, String path) {
-		Image cursor = GameFrame.openImage(object, path);
-		Dimension size = Toolkit.getDefaultToolkit().getBestCursorSize(32, 32);
-		Point position = new Point(size.width/2, size.height/2);
-		setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
-				cursor, position, "blank cursor"));
-	}
-
-	protected void setImagePlayer(Image openImage) {
-		if (imagePlayer != null)
-			imagePlayer.flush();
-		imagePlayer = openImage;
-	}
-
-	protected void drawPlayer(Graphics g, PlayerGraphic player) {
-		Point position = player.getPosition();
-		positionGraphic(position);
-
-		drawImage(g, imagePlayer, position);
-		String string = player.getName();
-		g.setColor(player.color);
-		g.drawChars(string.toCharArray(), 0, Math.min(10, string.length()), position.x, position.y);
-	}
-
 	protected synchronized void drawBombs(Graphics g) {
 		ArrayList<BombGraphic> list = new ArrayList<BombGraphic>(bombList);
 		for (BombGraphic bomb: list)
 			bomb.paint(g);
+	}
+
+	protected synchronized void drawPlayers(Graphics g) {
+		for (PlayerGraphic player: getFrame().getPlayerList())
+			player.paint(g);
 	}
 	
 	protected synchronized void drawWalls(Graphics g) {
@@ -191,7 +172,7 @@ public abstract class ContentPane extends Panel {
 	}
 
 	public void board2Graphic(Point position) {
-		scalePosition(position, getParent().getGame().getBoardSize());
+		getFrame().board2Graphic(position);
 	}
 
 	public synchronized void remove(BombGraphic bombGraphic) {
@@ -208,19 +189,10 @@ public abstract class ContentPane extends Panel {
 	}
 
 	protected void positionGraphic(Point position) {
-		scalePosition(position, getParent().getGame().getWindowFavoriteSize());
-		Dimension imageSize = imageSize();
-		position.setLocation(position.x-imageSize.width/2, position.y-imageSize.height/2);
+		getFrame().positionGraphic(position);
 	}
 
-	protected void scalePosition(Point position, Dimension dimension) {
-		Dimension actualSize = getSize();
-		position.setLocation(
-				(position.x*actualSize.width)	/dimension.width,
-				(position.y*actualSize.height)	/dimension.height);
-	}
-
-	public Dimension imageSize() {return getParent().imageSize();}
+	public Dimension imageSize() {return getFrame().imageSize();}
 
 	private void clearWalls(Game game) {
 		ArrayList<WallGraphic> list = new ArrayList<WallGraphic>(wallList);
@@ -281,22 +253,25 @@ public abstract class ContentPane extends Panel {
 		drawSpeedBuffs(g);
 		drawRangeBuffs(g);
 		drawLifeBuffs(g);
+		drawPlayers(g);
 	}
 
 	@Override
 	public void paint(Graphics g) {
-		GameFrame gameFrame = getParent();
+		GameFrame gameFrame = getFrame();
 		Game game = gameFrame.getGame();
 		Dimension boardSize = game.getBoardSize();
+		Dimension size = getSize();
+		Image img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = (Graphics2D) img.getGraphics();
 
 		clearLists(game);
 		for (int i=0; i<boardSize.width; i++) {
 			for (int j=0; j<boardSize.height; j++) {
-				updateItem(g, game.getItem(i, j));
+				updateItem(g2d, game.getItem(i, j));
 			}
 		}
-		drawLists(g);
-		for (PlayerGraphic player: gameFrame.getPlayerList())
-			drawPlayer(g, player);
+		drawLists(g2d);
+		g.drawImage(img, 0, 0, size.width, size.height, this);
 	}
 }

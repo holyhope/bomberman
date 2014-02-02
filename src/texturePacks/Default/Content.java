@@ -12,25 +12,16 @@ import graphics.BuffLifeGraphic;
 import graphics.BuffRangeGraphic;
 import graphics.BuffSpeedGraphic;
 import graphics.ContentPane;
-import graphics.GameFrame;
 import graphics.WallGraphic;
 
 @SuppressWarnings("serial")
 class Content extends ContentPane {
-	public Content(GameFrame gameframe) {super(gameframe);}
-
-	static Content Create(TexturePack texture) {
-		Content content = new Content(texture);
-		content.setImagePlayer(GameFrame.openImage(texture, "images/head.gif"));
-		content.setOpaque(false);
-		content.setDoubleBuffered(true);
-		content.setCursor(content, "images/head.gif");
-
-		return content;
+	public Content(TexturePack texturePack) {
+		super(texturePack);
+		setOpaque(false);
+		setDoubleBuffered(true);
+		setCursor("Default/images/head.gif", "head");
 	}
-
-	@Override
-	public TexturePack getParent() {return (TexturePack) super.getParent();}
 
 	@Override
 	protected BombGraphic newBomb(Bomb bomb) {
