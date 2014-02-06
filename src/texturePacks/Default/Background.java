@@ -32,7 +32,7 @@ class Background extends JRootPane {
 
 	static Background Create(GameFrame gameframe) {
 		Background background = new Background();
-		background.setImage("images/background.jpg");
+		background.setImage("images/groundA.png");
 		background.setDoubleBuffered(true);
 		background.setSize(gameframe.getSize());
 		return background;

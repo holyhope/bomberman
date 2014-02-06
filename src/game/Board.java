@@ -54,6 +54,10 @@ class Board implements Cloneable {
 				y >= 0 && y < getHeight());
 	}
 
+	void generateWall(List<Point> positions) {
+		
+	}
+	
 	void generateBoard(List<Point> positions) {
 		int i, j;
 		Random random = new Random();
@@ -63,12 +67,9 @@ class Board implements Cloneable {
 		for (i=0; i<getWidth(); i++) {
 			for (j=0; j<getHeight(); j++) {
 				playerArea = false;
-				for (Point position: positions) {
-					if ((position.x >= i-1 && position.x <= i+1 && position.y == j) || (position.y >= j-1 && position.x <= j+1 && position.x == i)) {
-						setItem(new Ground(game, new Point(i, j)));
-						playerArea = true;
-						break;
-					}
+				if(((j==0 && (i<=1 || i>=getWidth()-2)) || (j==1 && (i==0 || i==getWidth()-1)) || (j==getHeight()-2 && (i==0 || i==getWidth()-1)) || (j==getHeight()-1 && (i<=1 || i>=getWidth()-2)))) {
+					setItem(new Ground(game, new Point(i, j)));
+					playerArea = true;
 				}
 				if (!playerArea) {
 					if (i%2 == 1 && j%2 == 1) {
