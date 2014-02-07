@@ -7,6 +7,7 @@ import java.util.Date;
 public class Bomb extends Item {
 	private final int range;
 	private Date timer;
+	private Date explosion;
 	
 	/**
 	 * Constructor for a Bomb
@@ -91,7 +92,7 @@ public class Bomb extends Item {
 	protected static Bomb create(Game game, Point position, int timer, int range) {
 		Date now = new Date();
 		now = new Date(now.getTime()+timer);
-		return create(game, position, new Date(now.getTime()+timer), range);
+		return create(game, position, now, range);
 	}
 
 	/**
@@ -140,4 +141,23 @@ public class Bomb extends Item {
 	public Date getTimer() {
 		return (Date) timer.clone();
 	}
+
+	/**
+	 * getter for explosion
+	 * 
+	 * @return explosion
+	 */
+	public Date getExplosion() {
+		return explosion;
+	}
+
+	/**
+	 * setter for explosion
+	 * 
+	 * @param explosion the time of the explosion
+	 */
+	public void setExplosion(Date explosion) {
+		this.explosion = explosion;
+	}
+	
 }

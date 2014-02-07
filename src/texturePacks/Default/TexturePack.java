@@ -43,7 +43,7 @@ public class TexturePack extends GameFrame {
 		StringBuilder string = new StringBuilder();
 		long time = getGame().timeSpent();
 		long seconds = (time/1000)%60;
-		long minutes = seconds/60;
+		long minutes = (time/1000)/60;
 
 		string.append("Bomberman");
 		if (getGame().isStarted()) {

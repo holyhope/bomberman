@@ -2,7 +2,7 @@ package game;
 
 import java.awt.Point;
 
-class Speed {
+public class Speed {
 	private long time = 100;
 	private long range = 30;
 	private Direction direction = new Direction();

@@ -50,11 +50,32 @@ public class PlayerController implements KeyListener,FocusListener,ActionListene
 	@Override
 	public void keyReleased(KeyEvent e) {
 		switch (controls.getEvent(e.getKeyCode())) {
-		case UP:	player.stopY();	break;
-		case DOWN:	player.stopY();	break;
-		case LEFT:	player.stopX();	break;
-		case RIGHT:	player.stopX();	break;
-		default:	break;
+		case UP:
+			if(player.getSpeed().getDirectionY() == 1)
+				player.down();
+			else
+				player.stopY();
+			break;
+		case DOWN:
+			if(player.getSpeed().getDirectionY() == -1)
+				player.up();
+			else
+				player.stopY();
+			break;
+		case LEFT:
+			if(player.getSpeed().getDirectionX() == 1)
+				player.right();
+			else
+				player.stopX();
+			break;
+		case RIGHT:
+			if(player.getSpeed().getDirectionX() == -1)
+				player.left();
+			else
+				player.stopX();
+			break;
+		default:
+			break;
 		} 
 	}
 

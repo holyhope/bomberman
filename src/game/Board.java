@@ -77,7 +77,7 @@ class Board implements Cloneable {
 					} else {
 						switch (random.nextInt(10)) {
 						case 0: case 1: case 2:
-							setItem(new BuffedWall(game, new Point(i, j)));
+							setItem(new /*Buffed*/Wall(game, new Point(i, j)));
 							break;
 						case 3: case 4: case 5:
 							setItem(new Wall(game, new Point(i, j)));

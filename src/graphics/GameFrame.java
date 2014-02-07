@@ -37,6 +37,7 @@ public abstract class GameFrame extends JFrame implements ActionListener {
 	public abstract void updateTitle();
 
 	private GameFrame(Game game, int delay) {
+		this.game = game;
 		Dimension dimension = game.getWindowFavoriteSize();
 		setSize(dimension);
 		setPreferredSize(dimension);
@@ -226,11 +227,7 @@ public abstract class GameFrame extends JFrame implements ActionListener {
 		return dimension;
 	}
 
-	public List<PlayerGraphic> getWinners() {
-		List<PlayerGraphic> winners = new ArrayList<PlayerGraphic>();
-		for (PlayerGraphic player: getPlayerList())
-			if (!player.isDead())
-				winners.add(player);
-		return winners;
+	public List<Player> getWinners() {
+		return game.getWinners();
 	}
 }

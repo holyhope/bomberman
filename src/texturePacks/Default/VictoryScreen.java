@@ -1,9 +1,8 @@
 package texturePacks.Default;
 
+import game.Player;
 import graphics.GameFrame;
 import graphics.Panel;
-import graphics.PlayerGraphic;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -27,7 +26,7 @@ class VictoryScreen extends Panel {
 		Dimension dimension = getSize();
 		Rectangle2D rect;
 		String string;
-		List<PlayerGraphic> winners = getFrame().getWinners();
+		List<Player> winners = getFrame().getWinners();
 		switch (winners.size()) {
 		case 1:
 			string = "Le vainqueur est :";
@@ -43,12 +42,12 @@ class VictoryScreen extends Panel {
 		position.y+= size;
 		g.drawString(string, position.x, position.y);
 
-		for (PlayerGraphic winner: winners) {
+		for (Player winner: winners) {
 			string = winner.getName();
 			rect = fm.getStringBounds(string, g);
 			position.x = (dimension.width - (int)rect.getWidth()) / 2;
 			position.y+= size;
-			g.setColor(((PlayerImage)winner).getColor());
+			/*g.setColor(((PlayerImage)winner).getColor());*/
 			g.drawString(string, position.x, position.y);
 		}
 	}

@@ -318,8 +318,6 @@ public class Player extends Item {
 	 * Set the player's direction to up
 	 */
 	public void up() {
-		if (isDead())
-			return;
 		speed.setDirectionY(-1);
 	}
 
@@ -327,8 +325,6 @@ public class Player extends Item {
 	 * Set the player's direction to down
 	 */
 	public void down() {
-		if (isDead())
-			return;
 		speed.setDirectionY(1);
 	}
 
@@ -336,8 +332,6 @@ public class Player extends Item {
 	 * Set the player's direction to left
 	 */
 	public void left() {
-		if (isDead())
-			return;
 		speed.setDirectionX(-1);
 	}
 
@@ -345,8 +339,6 @@ public class Player extends Item {
 	 * Set the player's direction to right
 	 */
 	public void right() {
-		if (isDead())
-			return;
 		speed.setDirectionX(1);
 	}
 
@@ -482,6 +474,7 @@ public class Player extends Item {
 		value+= i;
 		if (value < maxSpeed )
 			speed.setSpeed(value);
+		System.out.println("add speed");
 	}
 
 	/**
@@ -526,6 +519,7 @@ public class Player extends Item {
 	 * @param i number of bombs to add to the total capacity
 	 */
 	protected void addCapacity(int i) {
+		System.out.println("add capacity");
 		nbBombMax+= i;
 	}
 
@@ -550,5 +544,14 @@ public class Player extends Item {
 	 */
 	public boolean isReady() {
 		return ready ;
+	}
+	
+	/**
+	 * getter for speed
+	 * 
+	 * @return speed
+	 */
+	public Speed getSpeed() {
+		return speed;
 	}
 }

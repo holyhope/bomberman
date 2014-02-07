@@ -182,13 +182,13 @@ public final class Game {
 	 * @return a list containing the winners
 	 */
 	public List<Player> getWinners() {
-		ArrayList<Player> list = new ArrayList<Player>();
-		if (!isOver())
-			return list;
-		for (Player player: bufferPlayers)
+		ArrayList<Player> winners = new ArrayList<Player>();
+
+		for (Player player: playerList)
 			if (!player.isDead())
-				list.add(player.clone());
-		return list;
+				winners.add(player.clone());
+		
+		return winners;
 	}
 
 	/**
@@ -316,6 +316,11 @@ public final class Game {
 	void destroy(Player player, Item item) {
 		if (item instanceof Buff)
 			((Buff)item).detroyed(player);
+		if(item instanceof Bomb) {
+			Date now = new Date();
+			now = new Date(now.getTime());
+			((Bomb)item).setExplosion(now);
+		}
 		destroy(item);
 	}
 
