@@ -26,7 +26,7 @@ public final class Game {
 	 * Calls another constructor with default values
 	 */
 	public Game() {
-		this(new Dimension(11, 11));
+		this(new Dimension(13, 13));
 	}
 
 	/**
@@ -36,7 +36,7 @@ public final class Game {
 	 */
 	public Game(Dimension boardDimension) {
 		board = new Board(boardDimension, this);
-		windowFavoriteSize = new Dimension(60*board.getWidth(), 60*board.getHeight());
+		windowFavoriteSize = new Dimension(800, 600);
 		playerList = new ArrayList<Player>();
 		bufferPlayers = new ArrayList<Player>();
 		try {

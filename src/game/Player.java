@@ -474,7 +474,6 @@ public class Player extends Item {
 		value+= i;
 		if (value < maxSpeed )
 			speed.setSpeed(value);
-		System.out.println("add speed");
 	}
 
 	/**
@@ -519,7 +518,6 @@ public class Player extends Item {
 	 * @param i number of bombs to add to the total capacity
 	 */
 	protected void addCapacity(int i) {
-		System.out.println("add capacity");
 		nbBombMax+= i;
 	}
 

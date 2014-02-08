@@ -65,6 +65,12 @@ public abstract class ContentPane extends Panel {
 		for (BuffLifeGraphic buff: list)
 			buff.paint(g);
 	}
+	
+	private void drawDropBuff(Graphics g) {
+		ArrayList<BuffDropGraphic> list = new ArrayList<BuffDropGraphic>(dropBuffList);
+		for(BuffDropGraphic buff:list)
+			buff.paint(g);
+	}
 
 	protected abstract BombGraphic newBomb(Bomb bomb);
 	protected abstract WallGraphic newWall(Wall wall);
@@ -88,7 +94,7 @@ public abstract class ContentPane extends Panel {
 	private void updateWall(Graphics g, Wall wall) {
 		Point position = wall.getBoardPosition();
 		board2Graphic(position);
-
+		
 		if (!wallList.contains(wall)) {
 			WallGraphic wallGraph = newWall(wall);
 			if (wallGraph != null) {
@@ -253,6 +259,7 @@ public abstract class ContentPane extends Panel {
 		drawSpeedBuffs(g);
 		drawRangeBuffs(g);
 		drawLifeBuffs(g);
+		drawDropBuff(g);
 		drawPlayers(g);
 	}
 

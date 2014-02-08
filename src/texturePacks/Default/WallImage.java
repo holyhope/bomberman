@@ -33,27 +33,33 @@ public class WallImage extends WallGraphic {
 	@Override
 	public void paint(Graphics graph) {
 		Dimension dimension = getParent().imageSize();
+		Point boardPos = getBoardPosition();
 		Point position = getBoardPosition();
 		getParent().board2Graphic(position);
 		Image img = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2d = (Graphics2D) img.getGraphics();
 
-		g2d.setColor(Color.DARK_GRAY);
-		g2d.fill(new Rectangle2D.Double(0, 0, dimension.width, dimension.height));
-
-		Dimension dim = new Dimension((dimension.width-(row+1)*reduction)/column, (dimension.height-(column+1)*reduction)/row);
-		Point pos = (Point) position.clone();
-		pos.x = reduction/2;
-		pos.y = reduction/2;
-		g2d.setColor(Color.GRAY);
-		for (int i=0; i<row; i++) {
-			pos.x = startX[i];
-			for (int j=0; j<column+1; j++) {
-				g2d.fill(new Rectangle2D.Double(
-						pos.x+(j*(dim.width+reduction)),
-						pos.y+(i*(dim.height+reduction)),
-						dim.width,
-						dim.height));
+		if((boardPos.x%2 == 1 && boardPos.y%2 == 1)) {
+			g2d.setColor(Color.DARK_GRAY);
+			g2d.fill(new Rectangle2D.Double(0, 0, dimension.width, dimension.height));
+		}
+		else {
+			g2d.setColor(Color.LIGHT_GRAY);
+			g2d.fill(new Rectangle2D.Double(0, 0, dimension.width, dimension.height));
+			Dimension dim = new Dimension((dimension.width-(row+1)*reduction)/column, (dimension.height-(column+1)*reduction)/row);
+			Point pos = (Point) position.clone();
+			pos.x = reduction/2;
+			pos.y = reduction/2;
+			g2d.setColor(Color.WHITE);
+			for (int i=0; i<row; i++) {
+				pos.x = startX[i];
+				for (int j=0; j<column+1; j++) {
+					g2d.fill(new Rectangle2D.Double(
+							pos.x+(j*(dim.width+reduction)),
+							pos.y+(i*(dim.height+reduction)),
+							dim.width,
+							dim.height));
+				}
 			}
 		}
 
