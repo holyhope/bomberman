@@ -59,13 +59,13 @@ public abstract class ContentPane extends Panel {
 	public Dimension imageSize() {return getFrame().imageSize();}
 
 	private void drawAll(Graphics2D g2d) {
-		drawPlayers(g2d);
 		drawDeads(g2d);
 		for (int i=0; i<board.length; i++) {
 			for (int j=0; j<board[i].length; j++) {
 				getItem(i, j).paint(g2d);
 			}
 		}
+		drawPlayers(g2d);
 	}
 	
 	private void drawDeads(Graphics2D g2d) {
