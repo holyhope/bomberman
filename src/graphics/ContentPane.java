@@ -31,7 +31,7 @@ public abstract class ContentPane extends Panel {
 		board = new ItemGraphic[dimension.width][dimension.height];
 	}
 
-	protected synchronized void drawPlayers(Graphics g) {
+	protected  void drawPlayers(Graphics g) {
 		for (PlayerGraphic player: getFrame().getPlayerList())
 			player.paint(g);
 	}

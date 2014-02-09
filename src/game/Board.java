@@ -21,7 +21,7 @@ class Board implements Cloneable {
 	}
 
 	@Override
-	protected synchronized Board clone() throws CloneNotSupportedException {
+	protected  Board clone() throws CloneNotSupportedException {
 		int i, j;
 		Board board = (Board) super.clone();
 		board.grid = this.grid.clone();
@@ -77,7 +77,7 @@ class Board implements Cloneable {
 					} else {
 						switch (random.nextInt(10)) {
 						case 0: case 1: case 2:
-							setItem(new /*Buffed*/Wall(game, new Point(i, j)));
+							setItem(new BuffedWall(game, new Point(i, j)));
 							break;
 						case 3: case 4: case 5:
 							setItem(new Wall(game, new Point(i, j)));
@@ -116,7 +116,7 @@ class Board implements Cloneable {
 		return getItem(position.x, position.y);
 	}
 
-	synchronized void update() {
+	 void update() {
 		int i, j;
 
 		for (i=0; i<getWidth(); i++)

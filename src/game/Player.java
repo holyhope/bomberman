@@ -146,7 +146,7 @@ public class Player extends Item {
 	 * @return a clone of the Player
 	 */
 	@Override
-	public synchronized Player clone() {
+	public  Player clone() {
 		Player player = Player.create(game, new Point(x, y), name);
 
 		player.speed = speed.clone();
@@ -185,7 +185,7 @@ public class Player extends Item {
 	 * @param delta time since the last update
 	 * @return true if the player has not been blocked, false otherwise 
 	 */
-	private synchronized boolean updatePosX(long delta) {
+	private  boolean updatePosX(long delta) {
 		int i;
 		Point oldPosBoard = getBoardPosition();
 		Point newPosition = speed.move(this, delta);
@@ -231,7 +231,7 @@ public class Player extends Item {
 	 * @param delta time since the last update
 	 * @return true if the player has not been blocked, false otherwise
 	 */
-	private synchronized boolean updatePosY(long delta) {
+	private  boolean updatePosY(long delta) {
 		int i;
 		Point oldPosBoard = getBoardPosition();
 		Point newPosition = speed.move(this, delta);
@@ -294,7 +294,7 @@ public class Player extends Item {
 	 * Moves the player to its new position
 	 * Keeps the date of the last update in lastUpdate
 	 */
-	protected synchronized void update() {
+	protected  void update() {
 		Date now = new Date();
 		long delta = now.getTime()-lastUpdate.getTime();
 

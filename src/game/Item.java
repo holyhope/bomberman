@@ -40,7 +40,7 @@ public abstract class Item extends Point implements Cloneable {
 	/**
 	 * Update the item.
 	 */
-	protected synchronized void update() {
+	protected  void update() {
 		
 	}
 

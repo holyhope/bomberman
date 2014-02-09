@@ -36,7 +36,7 @@ public class Bomb extends Item {
 	 * Checks the current date, the bomb will explode after the deadline
 	 */
 	@Override
-	protected synchronized void update() {
+	protected  void update() {
 		Date now = new Date();
 		if (now.after(timer)) {
 			game.explode(this);

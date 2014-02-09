@@ -75,7 +75,7 @@ public final class Game {
 	/**
 	 * setter for the buffers (bufferBoard and bufferPlayers)
 	 */
-	private synchronized void setBuffers() {
+	private  void setBuffers() {
 		try {
 			bufferBoard = board.clone();
 		} catch (CloneNotSupportedException e) {
@@ -91,7 +91,7 @@ public final class Game {
 	 * Updates the game by updating each player and the board
 	 * Keeps the date of the last update in lastUpdate
 	 */
-	private synchronized void update() {
+	private  void update() {
 		Date now = new Date();
 		for (Player player: playerList)
 			player.update();
