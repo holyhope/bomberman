@@ -10,4 +10,5 @@ interface TmpGraphic {
 	public void paint(Graphics graph);
 	void show(Graphics2D g2d);
 	void die(Graphics2D g2d);
+	void die(Date now);
 }

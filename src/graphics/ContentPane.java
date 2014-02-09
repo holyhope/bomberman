@@ -17,59 +17,23 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 
 @SuppressWarnings("serial")
 public abstract class ContentPane extends Panel {
+	private ItemGraphic board[][];
+	private ArrayList<TmpGraphic> dead = new ArrayList<TmpGraphic>();
+
 	public ContentPane(GameFrame gameFrame) {
 		super(gameFrame);
-	}
-
-	private ArrayList<BombGraphic> bombList = new ArrayList<BombGraphic>();
-	private ArrayList<WallGraphic> wallList = new ArrayList<WallGraphic>();
-	private ArrayList<BuffSpeedGraphic> speedBuffList = new ArrayList<BuffSpeedGraphic>();
-	private ArrayList<BuffRangeGraphic> rangeBuffList = new ArrayList<BuffRangeGraphic>();
-	private ArrayList<BuffLifeGraphic> lifeBuffList = new ArrayList<BuffLifeGraphic>();
-	private ArrayList<BuffDropGraphic> dropBuffList = new ArrayList<BuffDropGraphic>();
-
-	protected synchronized void drawBombs(Graphics g) {
-		ArrayList<BombGraphic> list = new ArrayList<BombGraphic>(bombList);
-		for (BombGraphic bomb: list)
-			bomb.paint(g);
+		Dimension dimension = gameFrame.getGame().getBoardSize();
+		board = new ItemGraphic[dimension.width][dimension.height];
 	}
 
 	protected synchronized void drawPlayers(Graphics g) {
 		for (PlayerGraphic player: getFrame().getPlayerList())
 			player.paint(g);
-	}
-	
-	protected synchronized void drawWalls(Graphics g) {
-		ArrayList<WallGraphic> list = new ArrayList<WallGraphic>(wallList);
-		for (WallGraphic wall: list)
-			wall.paint(g);
-	}
-
-	private void drawSpeedBuffs(Graphics g) {
-		ArrayList<BuffSpeedGraphic> list = new ArrayList<BuffSpeedGraphic>(speedBuffList);
-		for (BuffSpeedGraphic buff: list)
-			buff.paint(g);
-	}
-
-	private void drawRangeBuffs(Graphics g) {
-		ArrayList<BuffRangeGraphic> list = new ArrayList<BuffRangeGraphic>(rangeBuffList);
-		for (BuffRangeGraphic buff: list)
-			buff.paint(g);
-	}
-
-	private void drawLifeBuffs(Graphics g) {
-		ArrayList<BuffLifeGraphic> list = new ArrayList<BuffLifeGraphic>(lifeBuffList);
-		for (BuffLifeGraphic buff: list)
-			buff.paint(g);
-	}
-	
-	private void drawDropBuff(Graphics g) {
-		ArrayList<BuffDropGraphic> list = new ArrayList<BuffDropGraphic>(dropBuffList);
-		for(BuffDropGraphic buff:list)
-			buff.paint(g);
 	}
 
 	protected abstract BombGraphic newBomb(Bomb bomb);
@@ -78,99 +42,6 @@ public abstract class ContentPane extends Panel {
 	protected abstract BuffRangeGraphic newRangeBuff(RangeBuff buff);
 	protected abstract BuffLifeGraphic newLifeBuff(LifeBuff buff);
 	protected abstract BuffDropGraphic newDropBuff(DropBuff buff);
-
-	private void updateBomb(Graphics g, Bomb bomb) {
-		Point position = bomb.getBoardPosition();
-		board2Graphic(position);
-
-		if (!bombList.contains(bomb)) {
-			BombGraphic bombGraph = newBomb(bomb);
-			if (bombGraph != null) {
-				bombList.add(bombGraph);
-			}
-		}
-	}
-
-	private void updateWall(Graphics g, Wall wall) {
-		Point position = wall.getBoardPosition();
-		board2Graphic(position);
-		
-		if (!wallList.contains(wall)) {
-			WallGraphic wallGraph = newWall(wall);
-			if (wallGraph != null) {
-				wallList.add(wallGraph);
-			}
-		}
-	}
-
-	private void updateSpeedBuff(Graphics g, SpeedBuff buff) {
-		Point position = buff.getBoardPosition();
-		board2Graphic(position);
-
-		if (!speedBuffList.contains(buff)) {
-			BuffSpeedGraphic buffGraph = newSpeedBuff(buff);
-			if (buffGraph != null) {
-				speedBuffList.add(buffGraph);
-			}
-		}
-		
-	}
-
-	private void updateRangeBuff(Graphics g, RangeBuff buff) {
-		Point position = buff.getBoardPosition();
-		board2Graphic(position);
-
-		if (!rangeBuffList.contains(buff)) {
-			BuffRangeGraphic buffGraph = newRangeBuff(buff);
-			if (buffGraph != null) {
-				rangeBuffList.add(buffGraph);
-			}
-		}
-		
-	}
-
-	private void updateLifeBuff(Graphics g, LifeBuff buff) {
-		Point position = buff.getBoardPosition();
-		board2Graphic(position);
-
-		if (!lifeBuffList.contains(buff)) {
-			BuffLifeGraphic buffGraph = newLifeBuff(buff);
-			if (buffGraph != null) {
-				lifeBuffList.add(buffGraph);
-			}
-		}
-	}
-
-	private void updateDropBuff(Graphics g, DropBuff buff) {
-		Point position = buff.getBoardPosition();
-		board2Graphic(position);
-
-		if (!dropBuffList.contains(buff)) {
-			BuffDropGraphic buffGraph = newDropBuff(buff);
-			if (buffGraph != null) {
-				dropBuffList.add(buffGraph);
-			}
-		}
-		
-	}
-
-	protected void updateItem(Graphics g, Item item) {
-		if (item instanceof Bomb) {
-			updateBomb(g, (Bomb) item);
-		} else if (item instanceof Wall) {
-			updateWall(g, (Wall) item);
-		} else if (item instanceof SpeedBuff) {
-			updateSpeedBuff(g, (SpeedBuff) item);
-		} else if (item instanceof RangeBuff) {
-			updateRangeBuff(g, (RangeBuff) item);
-		} else if (item instanceof LifeBuff) {
-			updateLifeBuff(g, (LifeBuff) item);
-		} else if (item instanceof DropBuff) {
-			updateDropBuff(g, (DropBuff) item);
-		} else if (!(item instanceof Ground)) {
-			System.out.println("Objet inconnu. Impossible de l'afficher:\n"+item);
-		}
-	}
 
 	protected void drawImage(Graphics g, Image image, Point position) {
 		Dimension size = imageSize();
@@ -181,104 +52,110 @@ public abstract class ContentPane extends Panel {
 		getFrame().board2Graphic(position);
 	}
 
-	public synchronized void remove(BombGraphic bombGraphic) {
-		bombList.remove(bombGraphic);
-	}
-
-	public synchronized void remove(WallGraphic wallGraphic) {
-		wallList.remove(wallGraphic);
-	}
-
-	public synchronized void remove(ItemGraphic itemGraphic) {
-		bombList.remove(itemGraphic);
-		wallList.remove(itemGraphic);
-	}
-
 	protected void positionGraphic(Point position) {
 		getFrame().positionGraphic(position);
 	}
 
 	public Dimension imageSize() {return getFrame().imageSize();}
 
-	private void clearWalls(Game game) {
-		ArrayList<WallGraphic> list = new ArrayList<WallGraphic>(wallList);
-		for (WallGraphic wallGraph: list) {
-			if (!wallGraph.equals(game.getItem(wallGraph.getBoardPosition()))) {
-				wallList.remove(wallGraph);
+	private void drawAll(Graphics2D g2d) {
+		drawPlayers(g2d);
+		drawDeads(g2d);
+		for (int i=0; i<board.length; i++) {
+			for (int j=0; j<board[i].length; j++) {
+				getItem(i, j).paint(g2d);
+			}
+		}
+	}
+	
+	private void drawDeads(Graphics2D g2d) {
+		for (TmpGraphic item: dead) {
+			item.paint(g2d);
+		}
+	}
+
+	private ItemGraphic getItem(int x, int y) {
+		return board[x][y];
+	}
+	
+	private ItemGraphic newItem(Item item) {
+		ItemGraphic itemG = new ItemGraphic() {
+			@Override
+			public void paint(Graphics graph) {}
+			@Override
+			public Object getParent() {return null;}
+			@Override
+			public Point getBoardPosition() {return null;}
+		};
+
+		if (item instanceof Bomb) {
+			itemG = newBomb((Bomb) item);
+		} else if (item instanceof Wall) {
+			itemG = newWall((Wall) item);
+		} else if (item instanceof SpeedBuff) {
+			itemG = newSpeedBuff((SpeedBuff) item);
+		} else if (item instanceof RangeBuff) {
+			itemG = newRangeBuff((RangeBuff) item);
+		} else if (item instanceof LifeBuff) {
+			itemG = newLifeBuff((LifeBuff) item);
+		} else if (item instanceof DropBuff) {
+			itemG = newDropBuff((DropBuff) item);
+		} else if (!(item instanceof Ground)) {
+			System.out.println("Objet inconnu.");
+		}
+
+		return itemG;
+	}
+	
+	private void setItem(Item item) {
+		board[item.x][item.y] = newItem(item);
+	}
+
+	private void updateDead(Date now) {
+		Iterator<TmpGraphic> it = dead.iterator();
+		TmpGraphic item;
+		long t = now.getTime();
+
+		while (it.hasNext()) {
+			item = it.next();
+			if (item.getEnd().getTime()+item.getDuration() < t) {
+				it.remove();
 			}
 		}
 	}
 
-	private void clearBuffsSpeed(Game game) {
-		ArrayList<BuffSpeedGraphic> list = new ArrayList<BuffSpeedGraphic>(speedBuffList);
-		for (BuffSpeedGraphic buffGraph: list) {
-			if (!buffGraph.equals(game.getItem(buffGraph.getBoardPosition()))) {
-				speedBuffList.remove(buffGraph);
+	private void updateBoard(Date now, Game game) {
+		Item item;
+		ItemGraphic current;
+		Dimension dimension = game.getBoardSize();
+
+		for (int i=0; i<dimension.width; i++) {
+			for (int j=0; j<dimension.height; j++) {
+				item = game.getItem(i, j);
+				current = getItem(i, j);
+				if (!item.equals(current)) {
+					if (current instanceof TmpGraphic) {
+						dead.add((TmpGraphic)current);
+						((TmpGraphic)current).die(now);
+					}
+					setItem( item );
+				}
 			}
 		}
-	}
-
-	private void clearBuffsRange(Game game) {
-		ArrayList<BuffRangeGraphic> list = new ArrayList<BuffRangeGraphic>(rangeBuffList);
-		for (BuffRangeGraphic buffGraph: list) {
-			if (!buffGraph.equals(game.getItem(buffGraph.getBoardPosition()))) {
-				rangeBuffList.remove(buffGraph);
-			}
-		}
-	}
-
-	private void clearBuffsLife(Game game) {
-		ArrayList<BuffLifeGraphic> list = new ArrayList<BuffLifeGraphic>(lifeBuffList);
-		for (BuffLifeGraphic buffGraph: list) {
-			if (!buffGraph.equals(game.getItem(buffGraph.getBoardPosition()))) {
-				lifeBuffList.remove(buffGraph);
-			}
-		}
-	}
-
-	private void clearBuffsDrop(Game game) {
-		ArrayList<BuffDropGraphic> list = new ArrayList<BuffDropGraphic>(dropBuffList);
-		for (BuffDropGraphic buffGraph: list) {
-			if (!buffGraph.equals(game.getItem(buffGraph.getBoardPosition()))) {
-				dropBuffList.remove(buffGraph);
-			}
-		}
-	}
-
-	private void clearLists(Game game) {
-		clearWalls(game);
-		clearBuffsSpeed(game);
-		clearBuffsRange(game);
-		clearBuffsLife(game);
-		clearBuffsDrop(game);
-	}
-
-	private void drawLists(Graphics g) {
-		drawBombs(g);
-		drawWalls(g);
-		drawSpeedBuffs(g);
-		drawRangeBuffs(g);
-		drawLifeBuffs(g);
-		drawDropBuff(g);
-		drawPlayers(g);
 	}
 
 	@Override
 	public void paint(Graphics g) {
 		GameFrame gameFrame = getFrame();
 		Game game = gameFrame.getGame();
-		Dimension boardSize = game.getBoardSize();
 		Dimension size = getSize();
 		Image img = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = (Graphics2D) img.getGraphics();
+		Date now = new Date();
 
-		clearLists(game);
-		for (int i=0; i<boardSize.width; i++) {
-			for (int j=0; j<boardSize.height; j++) {
-				updateItem(g2d, game.getItem(i, j));
-			}
-		}
-		drawLists(g2d);
+		updateDead(now);
+		updateBoard(now, game);
+		drawAll(g2d);
 		g.drawImage(img, 0, 0, size.width, size.height, this);
 	}
 }

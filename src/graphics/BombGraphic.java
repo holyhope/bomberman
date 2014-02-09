@@ -33,6 +33,12 @@ public abstract class BombGraphic extends Bomb implements ItemGraphic,TmpGraphic
 	public int getDuration() {
 		return duration;
 	}
+	
+	@Override
+	public void die(Date now) {
+		if (end.after(now))
+			end = now;
+	}
 
 	@Override
 	public void paint(Graphics graph) {
@@ -40,8 +46,6 @@ public abstract class BombGraphic extends Bomb implements ItemGraphic,TmpGraphic
 		if (now.after(end)) {
 			if (now.getTime() < end.getTime()+duration) {
 				die((Graphics2D) graph);
-			} else {
-				parent.remove(this);
 			}
 		} else {
 			show((Graphics2D) graph);

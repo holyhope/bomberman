@@ -37,7 +37,6 @@ public class BombImage extends BombGraphic {
 		Content parent = getParent();
 
 		if (progress > getDuration()) {
-			parent.remove(this);
 			return;
 		}
 
